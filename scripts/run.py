@@ -199,6 +199,7 @@ def zalo_chat_ids(token):
     ok, res = _post(base + "/getUpdates", {"timeout": 5}, as_json=True)
     if not ok:
         print("Zalo getUpdates lỗi:", res, file=sys.stderr)
+        print(f"::warning title=Zalo::getUpdates lỗi: {res[:200]}")
         return
     found = set()
     def walk(o):
@@ -215,8 +216,10 @@ def zalo_chat_ids(token):
     if found:
         for cid, name in found:
             print(f">>> ZALO_CHAT_ID tìm được: {cid}  {name}")
+            print(f"::notice title=ZALO_CHAT_ID::{cid} {name}")   # hiện ở trang tóm tắt của lần chạy
     else:
         print(">>> Chưa thấy tin nhắn nào gửi tới bot Zalo. Hãy mở bot trong Zalo, gửi 'hi' rồi chạy lại. Phản hồi:", res[:300])
+        print(f"::warning title=Zalo::Chưa thấy tin nhắn tới bot. Phản hồi: {res[:200]}")
 
 
 def send_zalo(text):
