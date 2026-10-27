@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tín hiệu đầu tư</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231f6f5c'/><path d='M6 22l6-7 5 4 9-11' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<style>
+:root{
+  --bg:#f6f5f1;--panel:#ffffff;--ink:#1d2321;--muted:#66706c;--line:#e3e1da;--soft:#f0eee8;
+  --accent:#1f6f5c;--buy:#13804f;--buy-bg:#e2f4ea;--sell:#b3402b;--sell-bg:#fbe7e2;
+  --warn:#9a6a00;--warn-bg:#fbf1d6;--info:#2c5d9c;--info-bg:#e5eef9;--neutral-bg:#eeede8;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#121614;--panel:#1a201d;--ink:#e6ebe8;--muted:#98a39e;--line:#2b3430;--soft:#212825;
+  --accent:#5cc2a4;--buy:#5fd197;--buy-bg:#183a2a;--sell:#f08a74;--sell-bg:#3d221c;
+  --warn:#e6bf5a;--warn-bg:#3a3018;--info:#86b2ec;--info-bg:#1c2b40;--neutral-bg:#252b28;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 16px 48px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 16px;margin-bottom:16px}
+h1{font-size:22px;margin:0;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:13px}
+nav{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);margin-bottom:18px;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{flex:none;border:0;background:none;color:var(--muted);font:inherit;font-weight:600;padding:10px 12px;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap}
+nav button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card h3{margin:0 0 4px;font-size:16px}
+.card .when{color:var(--muted);font-size:12.5px;margin-bottom:10px}
+.msg{white-space:pre-wrap;font-size:14px}
+.msg .lead{font-weight:700}
+.err{background:var(--sell-bg);color:var(--sell);border-radius:8px;padding:8px 10px;font-size:13px;margin-bottom:10px}
+.kpis{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;min-width:120px}
+.kpi b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
+.kpi span{color:var(--muted);font-size:12.5px}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.tools input,.tools select{font:inherit;font-size:14px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
+.tools input{flex:1;min-width:140px;max-width:240px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--panel);color:var(--muted);font:inherit;font-size:13.5px;padding:7px 11px;cursor:pointer}
+.seg button.on{background:var(--soft);color:var(--ink);font-weight:600}
+.tbl{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+th,td{padding:8px 10px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line)}
+th{position:sticky;top:0;background:var(--soft);color:var(--muted);font-weight:600;font-size:12.5px;cursor:pointer;user-select:none}
+th.num,td.num{text-align:right}
+td.note{white-space:normal;min-width:240px;color:var(--muted);font-size:13px}
+tr:last-child td{border-bottom:0}
+td:first-child,th:first-child{position:sticky;left:0;background:inherit;z-index:1}
+th:first-child{background:var(--soft);z-index:2}
+tbody tr{background:var(--panel)}
+td:first-child{font-weight:700}
+.pos{color:var(--buy)}.neg{color:var(--sell)}
+.b{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600}
+.b-buy{background:var(--buy-bg);color:var(--buy)}.b-sell{background:var(--sell-bg);color:var(--sell)}
+.b-warn{background:var(--warn-bg);color:var(--warn)}.b-info{background:var(--info-bg);color:var(--info)}
+.b-mute{background:var(--neutral-bg);color:var(--muted)}
+details{margin-top:18px}
+summary{cursor:pointer;font-weight:600;margin-bottom:10px}
+.rules{color:var(--muted);font-size:13.5px;margin:0 0 12px;max-width:820px}
+.empty{padding:24px;text-align:center;color:var(--muted)}
+footer{margin-top:28px;color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>Tín hiệu đầu tư</h1><div class="sub" id="lastrun">Đang tải…</div></div>
+    <div class="sub">Giá chứng khoán tính bằng nghìn đồng</div>
+  </header>
+  <nav role="tablist" id="tabs"></nav>
+  <main id="view"></main>
+  <footer>Dữ liệu giá công khai từ Binance, CoinMarketCap và DNSE. Chỉ là công cụ theo dõi, không phải khuyến nghị đầu tư.</footer>
+</div>
+<script>
+const VN = {timeZone:"Asia/Ho_Chi_Minh"};
+const fmtTime = s => s ? new Date(s).toLocaleString("vi-VN",{...VN,hour:"2-digit",minute:"2-digit",day:"2-digit",month:"2-digit",year:"numeric"}) : "–";
+const n = v => v===""||v==null||isNaN(+v) ? null : +v;
+const fNum = v => { const x=n(v); if(x==null) return v||"–"; const a=Math.abs(x);
+  return x.toLocaleString("en-US",{maximumFractionDigits: a>=1000?1: a>=1?4: 6, maximumSignificantDigits: a>=1000?undefined:6}); };
+const fPct = (v,isFrac=true) => { const x=n(v); if(x==null) return "–"; const p=isFrac?x*100:x; return `<span class="${p>0?'pos':p<0?'neg':''}">${p>0?'+':''}${p.toFixed(1)}%</span>`; };
+const fR = v => { const x=n(v); if(x==null) return "–"; return `<span class="${x>0?'pos':x<0?'neg':''}">${x>0?'+':''}${x.toFixed(2)}R</span>`; };
+const esc = s => String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+const BADGE = {
+  "Mua mới":"buy","Tín hiệu mới":"buy","Báo mua":"buy",
+  "Thoát lệnh":"sell","Bán phần còn lại":"sell","Vừa thoát":"sell",
+  "Vừa chốt 50%":"warn","Chờ lần 3":"warn","Chờ vượt Tenkan":"warn",
+  "Đang giữ":"info","Đã chốt 50%":"info","Đã chốt 2R, giữ 50%":"info","Đang tích lũy":"info"};
+const badge = s => `<span class="b b-${BADGE[s]||'mute'}">${esc(s)}</span>`;
+const ORDER = s => ({"Mua mới":1,"Tín hiệu mới":1,"Báo mua":1,"Thoát lệnh":2,"Bán phần còn lại":2,"Vừa chốt 50%":3,"Chờ lần 3":3,"Vừa thoát":4,"Đang giữ":5,"Đã chốt 50%":5,"Đã chốt 2R, giữ 50%":5,"Đang tích lũy":6,"Chờ vượt Tenkan":6}[s]||9);
+
+// cột: [khóa, nhãn, kiểu]  kiểu: num | pct (tỷ lệ) | pct100 (đã là %) | R | badge | note | text
+const VIEWS = {
+  ichi3d:{title:"Ichimoku 3D", file:"signals_3d.csv", trades:"trades_3d.csv", key:"ichi", status:"trang_thai",
+    rules:"Khung nến 3 ngày (BTC, ETH, BNB, SOL, LINK). Mua khi nến 3D đóng trên Tenkan lần thứ 3 sau ≥ 2 lần thất bại. Dừng lỗ ở đáy nến tín hiệu; chốt toàn bộ khi nến 3D đóng dưới Kijun.",
+    cols:[["coin","Coin"],["trang_thai","Trạng thái","badge"],["gia_hien_tai","Giá","num"],["gia_vao","Giá vào","num"],["dung_lo","Dừng lỗ","num"],["chot_loi_kijun","Kijun (chốt)","num"],["R_hien_tai","R hiện tại","R"],["lai_pct","Lãi","pct100"],["rui_ro_pct","Rủi ro","risk100"],["tenkan","Tenkan","num"],["so_lan_that_bai","Lần thất bại","num"],["nen_tiep_luc","Nến tiếp theo"],["ghi_chu","Ghi chú","note"]],
+    tcols:[["coin","Coin"],["ngay_vao","Ngày vào"],["gia_vao","Giá vào","num"],["dung_lo","Dừng lỗ","num"],["ngay_thoat","Ngày thoát"],["gia_thoat","Giá thoát","num"],["ket_qua","Kết quả"],["so_nen","Số nến","num"],["R","R","R"],["lai_pct","Lãi","pct100"]]},
+  ichi1w:{title:"Ichimoku tuần", file:"signals_1w.csv", trades:"trades_1w.csv", key:"ichi", status:"trang_thai",
+    rules:"Khung tuần, 15 coin. Mua khi nến tuần đóng trên Tenkan lần thứ 3. Chốt 50% ở 2R rồi dời dừng lỗ về giá vào; bán phần còn lại khi nến tuần đóng dưới MA18.",
+    cols:[["coin","Coin"],["trang_thai","Trạng thái","badge"],["gia_hien_tai","Giá","num"],["gia_vao","Giá vào","num"],["dung_lo","Dừng lỗ","num"],["chot_loi_1_2R","Chốt 50% (2R)","num"],["chot_loi_2_ma18","MA18","num"],["da_chot_50","Đã chốt 50%"],["R_hien_tai","R hiện tại","R"],["lai_pct","Lãi","pct100"],["so_lan_that_bai","Lần thất bại","num"],["ghi_chu","Ghi chú","note"]],
+    tcols:[["coin","Coin"],["ngay_vao","Ngày vào"],["gia_vao","Giá vào","num"],["dung_lo","Dừng lỗ","num"],["chot_2R","2R","num"],["ngay_chot_50","Chốt 50%"],["ngay_thoat","Ngày thoát"],["gia_thoat_tb","Giá thoát TB","num"],["ket_qua","Kết quả"],["so_tuan","Số tuần","num"],["R","R","R"],["lai_pct","Lãi","pct100"]]},
+  v2:{title:"V2 tuần", file:"v2_signals.csv", key:"v2", status:"status", market:true,
+    rules:"Crypto (danh sách theo dõi + top 80 Binance) và chứng khoán (VN30 + danh sách theo dõi). Mua khi tuần đóng cắt lên Tenkan sau ≥ 2 lần vượt thất bại trong 52 tuần. Dừng lỗ = đáy nến tín hiệu; chốt 50% ở 2R, dời dừng lỗ về giá vào; bán nốt khi tuần đóng dưới MA18.",
+    cols:[["symbol","Mã"],["status","Trạng thái","badge"],["market","Thị trường"],["group","Nhóm"],["price","Giá","num"],["entry","Giá vào","num"],["stop_now","Dừng lỗ","num"],["target_2r","Chốt 50% (2R)","num"],["r_now","R hiện tại","R"],["risk_pct","Rủi ro","risk"],["tenkan","Tenkan","num"],["ma18","MA18","num"],["failed_52w","Vượt hỏng","num"],["last_exit","Thoát gần nhất"],["last_exit_r","R lần thoát","R"],["n_trades","Số lệnh","num"],["win_rate","Tỷ lệ thắng","pct"],["total_r","Tổng R","R"]]},
+  bh:{title:"Mua đáy", file:"bh_status.csv", trades:"bh_buys.csv", key:"bh", status:"status", market:true,
+    rules:"Mua khi giá đã giảm ≥ 70% (crypto) / 40% (chứng khoán) từ đỉnh lịch sử, đóng dưới mây Ichimoku tuần, và đóng trên Tenkan lần thứ 3 sau ≥ 2 lần thất bại. Mua và giữ, không dừng lỗ; mỗi mã tối đa 1 lần mua mỗi 52 tuần.",
+    cols:[["symbol","Mã"],["status","Trạng thái","badge"],["market","Thị trường"],["price","Giá","num"],["dd","Giảm từ đỉnh","pct"],["peak_ath","Đỉnh lịch sử","num"],["tenkan","Tenkan","num"],["cloud_pos","Vị trí mây"],["failed_52w","Vượt hỏng","num"],["n_buys","Số lần mua","num"],["avg_entry","Giá vốn TB","num"],["ret_avg","Lãi TB","pct"],["note","Ghi chú","note"]],
+    tcols:[["symbol","Mã"],["market","Thị trường"],["signal_week","Tuần tín hiệu"],["buy_date","Ngày mua"],["buy_price","Giá mua","num"],["dd_at_signal","Giảm lúc mua","pct"],["price","Giá nay","num"],["ret","Lãi","pct"],["max_dd_after","Giảm sâu nhất sau mua","pct"]]},
+};
+const TABS = [["home","Tổng quan"],["ichi3d","Ichimoku 3D"],["ichi1w","Ichimoku tuần"],["v2","V2 tuần"],["bh","Mua đáy"]];
+const JOBNAME = {ichi:"Ichimoku 3D & tuần", v2:"Tín hiệu V2 khung tuần", bh:"Mua đáy và giữ"};
+
+let META = {}; const CACHE = {}; const STATE = {};
+const bust = () => "?t=" + Date.now();
+
+function parseCSV(text){
+  const rows=[]; let row=[], f="", q=false;
+  for(let i=0;i<text.length;i++){ const c=text[i];
+    if(q){ if(c=='"'){ if(text[i+1]=='"'){f+='"';i++;} else q=false; } else f+=c; }
+    else if(c=='"') q=true; else if(c==','){row.push(f);f="";}
+    else if(c=='\n'||c=='\r'){ if(c=='\r'&&text[i+1]=='\n') i++; row.push(f); f=""; if(row.length>1||row[0]!=="") rows.push(row); row=[]; }
+    else f+=c; }
+  if(f!==""||row.length){row.push(f); rows.push(row);}
+  const h=rows.shift()||[]; return rows.map(r=>Object.fromEntries(h.map((k,i)=>[k,r[i]??""])));
+}
+async function load(file){
+  if(!CACHE[file]){ const r=await fetch("data/"+file+bust()); if(!r.ok) throw new Error(file); CACHE[file]=parseCSV(await r.text()); }
+  return CACHE[file];
+}
+function cell(r,[k,,t]){
+  const v=r[k];
+  if(t==="badge") return `<td>${badge(v)}</td>`;
+  if(t==="num") return `<td class="num">${esc(fNum(v))}</td>`;
+  if(t==="pct") return `<td class="num">${fPct(v)}</td>`;
+  if(t==="pct100") return `<td class="num">${fPct(v,false)}</td>`;
+  if(t==="risk"||t==="risk100"){ const x=n(v); return `<td class="num">${x==null?"–":(t==="risk"?x*100:x).toFixed(1)+"%"}</td>`; }
+  if(t==="R") return `<td class="num">${fR(v)}</td>`;
+  if(t==="note") return `<td class="note">${esc(v)}</td>`;
+  return `<td>${esc(v||"–")}</td>`;
+}
+function table(rows, cols, id){
+  if(!rows.length) return `<div class="tbl"><div class="empty">Không có dòng nào</div></div>`;
+  const s=STATE[id]||{};
+  if(s.sort){ const [k,dir]=s.sort; rows=[...rows].sort((a,b)=>{const x=n(a[k]),y=n(b[k]);
+    const c= x!=null&&y!=null ? x-y : String(a[k]).localeCompare(String(b[k]),"vi"); return dir*c;}); }
+  return `<div class="tbl"><table><thead><tr>${cols.map(([k,l,t])=>`<th class="${["num","pct","pct100","R","risk","risk100"].includes(t)?'num':''}" data-sort="${id}|${k}">${esc(l)}${s.sort&&s.sort[0]===k?(s.sort[1]>0?' ▲':' ▼'):''}</th>`).join("")}</tr></thead>
+  <tbody>${rows.map(r=>`<tr>${cols.map(c=>cell(r,c)).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+function errLine(key){
+  const a=META.datasets?.[key]?.lastAttempt;
+  return a && !a.ok ? `<div class="err">Lần chạy ${fmtTime(a.at)} bị lỗi: ${esc(a.error||"không rõ")}. Đang hiển thị dữ liệu cũ.</div>` : "";
+}
+function msgHTML(t){ return esc(t).replace(/^([A-ZÀ-Ỹ0-9 %]{3,}:)/gm,'<span class="lead">$1</span>'); }
+
+async function renderHome(){
+  const cards = ["ichi","v2","bh"].map(k=>{
+    const m=META.messages?.[k], d=META.datasets?.[k];
+    return `<div class="card"><h3>${JOBNAME[k]}</h3><div class="when">Cập nhật ${fmtTime(d?.updated)}</div>${errLine(k)}
+      <div class="msg">${m?msgHTML(m.text):'<span class="sub">Chưa có dữ liệu</span>'}</div></div>`; }).join("");
+  return `<div class="grid">${cards}</div>`;
+}
+async function renderView(id){
+  const v=VIEWS[id], s=STATE[id]||(STATE[id]={mkt:"all",st:"all",q:""});
+  let rows=await load(v.file);
+  const counts={}; rows.forEach(r=>counts[r[v.status]]=(counts[r[v.status]]||0)+1);
+  const statuses=Object.keys(counts).sort((a,b)=>ORDER(a)-ORDER(b));
+  let shown=rows.filter(r=>(s.mkt==="all"||r.market===s.mkt)&&(s.st==="all"||r[v.status]===s.st)
+    &&(!s.q||(r.coin||r.symbol||"").toLowerCase().includes(s.q.toLowerCase())));
+  if(!s.sort) shown.sort((a,b)=>ORDER(a[v.status])-ORDER(b[v.status]) || (n(a.rank)??9)-(n(b.rank)??9));
+  const kpis=statuses.filter(x=>ORDER(x)<9).slice(0,5).map(x=>`<div class="kpi"><b>${counts[x]}</b><span>${esc(x)}</span></div>`).join("");
+  const mk = v.market ? `<div class="seg">${[["all","Tất cả"],["Crypto","Crypto"],["Chứng khoán","Chứng khoán"]].map(([k,l])=>`<button data-mkt="${k}" class="${s.mkt===k?'on':''}">${l}</button>`).join("")}</div>` : "";
+  let html = `<p class="rules">${esc(v.rules)}</p>${errLine(v.key)}
+    <div class="sub" style="margin-bottom:10px">Cập nhật ${fmtTime(META.datasets?.[v.key]?.updated)}</div>
+    ${kpis?`<div class="kpis">${kpis}</div>`:""}
+    <div class="tools"><input id="q" type="search" placeholder="Tìm mã…" value="${esc(s.q)}">${mk}
+      <select id="st"><option value="all">Mọi trạng thái (${rows.length})</option>${statuses.map(x=>`<option ${s.st===x?'selected':''} value="${esc(x)}">${esc(x)} (${counts[x]})</option>`).join("")}</select></div>
+    ${table(shown, v.cols, id)}`;
+  if(v.trades){
+    let tr=await load(v.trades);
+    if(s.q) tr=tr.filter(r=>(r.coin||r.symbol||"").toLowerCase().includes(s.q.toLowerCase()));
+    if(v.market && s.mkt!=="all") tr=tr.filter(r=>r.market===s.mkt);
+    tr=[...tr].reverse();
+    html += `<details ${s.open?'open':''} id="hist"><summary>${id==="bh"?"Lịch sử các lần mua":"Lịch sử lệnh"} (${tr.length})</summary>${table(tr, v.tcols, id+"_t")}</details>`;
+  }
+  return html;
+}
+let current="home";
+async function show(id){
+  current=id;
+  document.querySelectorAll("nav button").forEach(b=>{b.setAttribute("aria-selected",b.dataset.tab===id); if(b.dataset.tab===id) b.scrollIntoView({block:"nearest",inline:"nearest"});});
+  const view=document.getElementById("view");
+  try{ view.innerHTML = id==="home" ? await renderHome() : await renderView(id); }
+  catch(e){ view.innerHTML=`<div class="card empty">Chưa tải được dữ liệu (${esc(e.message)}). Có thể lần chạy đầu tiên chưa xong.</div>`; }
+  const q=document.getElementById("q");
+  if(q){ q.oninput=()=>{STATE[id].q=q.value; clearTimeout(q._t); q._t=setTimeout(async()=>{await show(id); const nq=document.getElementById("q"); nq.focus(); nq.setSelectionRange(nq.value.length,nq.value.length);},250);}; }
+  const st=document.getElementById("st"); if(st) st.onchange=()=>{STATE[id].st=st.value; show(id);};
+  document.querySelectorAll("[data-mkt]").forEach(b=>b.onclick=()=>{STATE[id].mkt=b.dataset.mkt; show(id);});
+  const h=document.getElementById("hist"); if(h) h.ontoggle=()=>STATE[id].open=h.open;
+  document.querySelectorAll("th[data-sort]").forEach(th=>th.onclick=()=>{const [tid,k]=th.dataset.sort.split("|");
+    const s=STATE[tid]||(STATE[tid]={}); s.sort = s.sort&&s.sort[0]===k ? (s.sort[1]>0?[k,-1]:null) : [k,1]; show(id);});
+  try{ history.replaceState(null,"","#"+id); }catch(e){}
+}
+async function init(){
+  document.getElementById("tabs").innerHTML = TABS.map(([k,l])=>`<button role="tab" data-tab="${k}">${l}</button>`).join("");
+  document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>show(b.dataset.tab));
+  try{ META = await (await fetch("data/meta.json"+bust())).json(); }catch(e){ META={}; }
+  document.getElementById("lastrun").textContent = META.lastRun ? "Lần chạy gần nhất: " + fmtTime(META.lastRun.at) + " (giờ VN)" : "Chưa có lần chạy nào";
+  const h=location.hash.slice(1); show(TABS.some(t=>t[0]===h)?h:"home");
+}
+init();
+</script>
+</body>
+</html>

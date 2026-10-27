@@ -1,0 +1,45 @@
+{
+ "datasets": {
+  "ichi": {
+   "updated": "2026-10-27T04:09:59Z",
+   "lastAttempt": {
+    "at": "2026-10-27T04:09:59Z",
+    "ok": true
+   }
+  },
+  "v2": {
+   "updated": "2026-10-27T04:05:05Z",
+   "lastAttempt": {
+    "at": "2026-10-27T04:05:05Z",
+    "ok": true
+   }
+  },
+  "bh": {
+   "updated": "2026-10-27T04:05:51Z",
+   "lastAttempt": {
+    "at": "2026-10-27T04:05:51Z",
+    "ok": true
+   }
+  }
+ },
+ "messages": {
+  "ichi": {
+   "at": "2026-10-27T04:09:59Z",
+   "text": "Không có tín hiệu mới hôm nay. Nến 3D tiếp theo đóng 2026-10-29 07:00, nến tuần 2026-11-02 07:00.\n3D đang giữ: BTC (8.41R), SOL (6.21R)"
+  },
+  "v2": {
+   "at": "2026-10-27T04:05:05Z",
+   "text": "MUA MỚI: BCM (CK, nghìn đ) giá 41.35, dừng lỗ 38.5, chốt 50% tại 47.05, rủi ro 6.9%; VIC (CK, nghìn đ) giá 237, dừng lỗ 205.8, chốt 50% tại 299.4, rủi ro 13.2%\nBÁN NỐT 50%: TWT (crypto), FET (crypto)\nBTC: Đã chốt 2R, giữ 50%; VNINDEX: Chờ vượt Tenkan. Đang giữ 21 mã, đã chốt 2R giữ 50%: 29 mã."
+  },
+  "bh": {
+   "at": "2026-10-27T04:05:51Z",
+   "text": "CHỜ LẦN 3: TWT (crypto) cần tuần đóng trên Tenkan 0.5365, giá hiện 0.4278; LDO (crypto) cần tuần đóng trên Tenkan 0.4168, giá hiện 0.3649; PLX (CK, nghìn đ) cần tuần đóng trên Tenkan 37, giá hiện 35.65; HVN (CK, nghìn đ) cần tuần đóng trên Tenkan 21.925, giá hiện 20.7; VNM (CK, nghìn đ) cần tuần đóng trên Tenkan 60.7, giá hiện 57.6; PNJ (CK, nghìn đ) cần tuần đóng trên Tenkan 31.4, giá hiện 17.45\nĐANG TÍCH LŨY: AAVE, OIL, SAB"
+  }
+ },
+ "lastRun": {
+  "at": "2026-10-27T04:09:59Z",
+  "jobs": [
+   "ichi"
+  ]
+ }
+}
