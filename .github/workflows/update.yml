@@ -38,10 +38,12 @@ jobs:
       - name: Cài thư viện
         run: pip install -r requirements.txt
 
-      - name: Chạy bộ quét và gửi Telegram
+      - name: Chạy bộ quét và gửi Telegram, Zalo
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          ZALO_BOT_TOKEN: ${{ secrets.ZALO_BOT_TOKEN }}
+          ZALO_CHAT_ID: ${{ secrets.ZALO_CHAT_ID }}
           DASHBOARD_URL: ${{ vars.DASHBOARD_URL }}
         run: python scripts/run.py --jobs "${{ github.event.inputs.jobs || 'auto' }}" || echo "SCAN_FAILED=1" >> "$GITHUB_ENV"
 
