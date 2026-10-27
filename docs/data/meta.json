@@ -1,9 +1,9 @@
 {
  "datasets": {
   "ichi": {
-   "updated": "2026-10-27T09:36:40Z",
+   "updated": "2026-10-27T09:44:03Z",
    "lastAttempt": {
-    "at": "2026-10-27T09:36:40Z",
+    "at": "2026-10-27T09:44:03Z",
     "ok": true
    }
   },
@@ -24,8 +24,8 @@
  },
  "messages": {
   "ichi": {
-   "at": "2026-10-27T09:36:40Z",
-   "text": "3D CẢNH BÁO: SOL Đang test lần 1 (Tenkan 111.19, 6.12R)\n3D đang giữ: SOL (6.12R, đã test Tenkan 1 lần), ZEC (8.44R, đã test Tenkan 1 lần), NEAR (17.64R, đã test Tenkan 1 lần)"
+   "at": "2026-10-27T09:44:03Z",
+   "text": "3D CẢNH BÁO: SOL Đang test lần 1 (Tenkan 111.19, 6.1R)\n3D đang giữ: SOL (6.1R, đã test Tenkan 1 lần), ZEC (8.44R, đã test Tenkan 1 lần), NEAR (17.57R, đã test Tenkan 1 lần)"
   },
   "v2": {
    "at": "2026-10-27T06:53:17Z",
@@ -37,7 +37,7 @@
   }
  },
  "lastRun": {
-  "at": "2026-10-27T09:36:48Z",
+  "at": "2026-10-27T09:44:11Z",
   "jobs": [
    "ichi"
   ]
