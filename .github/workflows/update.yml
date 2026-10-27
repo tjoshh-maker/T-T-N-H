@@ -1,0 +1,65 @@
+name: Cập nhật tín hiệu
+
+on:
+  schedule:
+    - cron: "13 0 * * *"   # 07:13 sáng giờ Việt Nam mỗi ngày (GitHub có thể chạy trễ 5–30 phút)
+  workflow_dispatch:         # cho phép bấm "Run workflow" để chạy tay
+    inputs:
+      jobs:
+        description: "Chạy bộ nào"
+        type: choice
+        default: auto
+        options: [auto, all, ichi, v2, bh]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: cap-nhat-tin-hieu
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Cài thư viện
+        run: pip install -r requirements.txt
+
+      - name: Chạy bộ quét và gửi Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DASHBOARD_URL: ${{ vars.DASHBOARD_URL }}
+        run: python scripts/run.py --jobs "${{ github.event.inputs.jobs || 'auto' }}" || echo "SCAN_FAILED=1" >> "$GITHUB_ENV"
+
+      - name: Lưu dữ liệu mới vào kho
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data
+          git diff --cached --quiet || git commit -m "Cập nhật dữ liệu $(TZ=Asia/Ho_Chi_Minh date '+%Y-%m-%d %H:%M')"
+          git push
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - id: deploy
+        uses: actions/deploy-pages@v4
+
+      - name: Báo lỗi nếu cả lần chạy đều thất bại
+        if: env.SCAN_FAILED == '1'
+        run: exit 1
