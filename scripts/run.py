@@ -196,13 +196,6 @@ def zalo_chat_ids(token):
     """In ra chat id của những ai vừa nhắn cho bot Zalo (dùng khi chưa có ZALO_CHAT_ID)."""
     base = f"https://bot-api.zaloplatforms.com/bot{token}"
     _post(base + "/deleteWebhook", {}, as_json=True)
-    ok, res = _post(base + "/getUpdates", {"timeout": 30}, as_json=True, http_timeout=45)
-    if not ok and "408" in res:   # hết thời gian chờ mà chưa có tin mới
-        ok, res = True, "{}"
-    if not ok:
-        print("Zalo getUpdates lỗi:", res, file=sys.stderr)
-        print(f"::warning title=Zalo::getUpdates lỗi: {res[:200]}")
-        return
     found = set()
     def walk(o):
         if isinstance(o, dict):
@@ -211,10 +204,21 @@ def zalo_chat_ids(token):
             for v in o.values(): walk(v)
         elif isinstance(o, list):
             for v in o: walk(v)
-    try:
-        walk(json.loads(res))
-    except Exception:
-        pass
+    # Zalo chỉ trả về tin đến trong lúc đang chờ, nên chờ liên tục khoảng 5 phút
+    print(">>> Đang chờ tin nhắn tới bot Zalo (tối đa ~5 phút): hãy gửi 'hi' cho bot ngay bây giờ")
+    res = ""
+    for _ in range(10):
+        ok, res = _post(base + "/getUpdates", {"timeout": 30}, as_json=True, http_timeout=45)
+        if not ok and "408" not in res:
+            print("Zalo getUpdates lỗi:", res, file=sys.stderr)
+            print(f"::warning title=Zalo::getUpdates lỗi: {res[:200]}")
+            return
+        try:
+            walk(json.loads(res))
+        except Exception:
+            pass
+        if found:
+            break
     if found:
         for cid, name in found:
             print(f">>> ZALO_CHAT_ID tìm được: {cid}  {name}")
