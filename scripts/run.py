@@ -89,7 +89,8 @@ def msg_ichi(d, today):
             out.append("3D CẢNH BÁO: " + "; ".join(
                 f"{r['coin']} {r['canh_bao']} (Tenkan {fmt(r['nguong_tenkan'])}, {fmt(r['R_hien_tai'])}R)"
                 for r in warns))
-    hold3 = [r for r in s3 if r["trang_thai"] in ("Đang giữ", "Mua mới")]
+    # coin "Không theo (lệnh cũ)" là lệnh mở trước ngày bắt đầu theo dõi: không nhắc tới
+    hold3 = [r for r in s3 if r["trang_thai"] == "Đang giữ"]
     if hold3:
         out.append("3D đang giữ: " + ", ".join(
             f"{r['coin']} ({fmt(r['R_hien_tai'])}R, đã test Tenkan {r.get('test_tenkan') or 0} lần)" for r in hold3))
@@ -102,7 +103,7 @@ def msg_ichi(d, today):
             if rows:
                 new = True
                 out.append(f"{label}: " + "; ".join(f(r) for r in rows))
-        held = [r for r in s1 if r["trang_thai"] in ("Mua mới", "Đang giữ", "Vừa chốt 50%", "Đã chốt 50%")]
+        held = [r for r in s1 if r["trang_thai"] in ("Đang giữ", "Vừa chốt 50%", "Đã chốt 50%")]
         out.append(f"Khung tuần đang giữ {len(held)} coin" + (": " + ", ".join(r["coin"] for r in held) if held else "."))
     if not new:
         nxt3 = min((r["nen_tiep_luc"] for r in s3), default="–")

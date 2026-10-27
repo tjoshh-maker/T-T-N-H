@@ -92,16 +92,16 @@ const BADGE = {
   "Vừa chốt 50%":"warn","Chờ lần 3":"warn","Chờ vượt Tenkan":"warn",
   "Đang giữ":"info","Đã chốt 50%":"info","Đã chốt 2R, giữ 50%":"info","Đang tích lũy":"info"};
 const badge = s => `<span class="b b-${BADGE[s]||'mute'}">${esc(s)}</span>`;
-const ORDER = s => ({"Mua mới":1,"Tín hiệu mới":1,"Báo mua":1,"Thoát lệnh":2,"Bán phần còn lại":2,"Vừa chốt 50%":3,"Chờ lần 3":3,"Vừa thoát":4,"Đang giữ":5,"Đã chốt 50%":5,"Đã chốt 2R, giữ 50%":5,"Đang tích lũy":6,"Chờ vượt Tenkan":6}[s]||9);
+const ORDER = s => ({"Mua mới":1,"Tín hiệu mới":1,"Báo mua":1,"Thoát lệnh":2,"Bán phần còn lại":2,"Vừa chốt 50%":3,"Chờ lần 3":3,"Vừa thoát":4,"Đang giữ":5,"Đã chốt 50%":5,"Đã chốt 2R, giữ 50%":5,"Đang tích lũy":6,"Chờ vượt Tenkan":6,"Không theo (lệnh cũ)":8}[s]||9);
 
 // cột: [khóa, nhãn, kiểu]  kiểu: num | pct (tỷ lệ) | pct100 (đã là %) | R | badge | note | text
 const VIEWS = {
   ichi3d:{title:"Ichimoku 3D", file:"signals_3d.csv", trades:"trades_3d.csv", key:"ichi", status:"trang_thai",
-    rules:"Khung nến 3 ngày (BTC, ETH, BNB, SOL, LINK, ZEC, NEAR). Mua khi nến 3D đóng trên Tenkan lần thứ 3 sau ≥ 2 lần thất bại. Dừng lỗ ở đáy nến tín hiệu. Chốt lời: bán toàn bộ ở lần test Tenkan thứ 2 (giá thấp nhất chạm Tenkan, bán ở giá đóng nến đó); lưới an toàn: nến 3D đóng dưới Kijun.",
+    rules:"Khung nến 3 ngày (BTC, ETH, BNB, SOL, LINK, ZEC, NEAR). Mua khi nến 3D đóng trên Tenkan lần thứ 3 sau ≥ 2 lần thất bại. Dừng lỗ ở đáy nến tín hiệu. Chốt lời: bán toàn bộ ở lần test Tenkan thứ 2 (giá thấp nhất chạm Tenkan, bán ở giá đóng nến đó); lưới an toàn: nến 3D đóng dưới Kijun. Chỉ tính lệnh mở từ 27/10/2026; lệnh cũ theo luật ghi \"Không theo (lệnh cũ)\".",
     cols:[["coin","Coin"],["trang_thai","Trạng thái","badge"],["canh_bao","Cảnh báo","warn"],["gia_hien_tai","Giá","num"],["gia_vao","Giá vào","num"],["dung_lo","Dừng lỗ","num"],["test_tenkan","Đã test Tenkan","num"],["nguong_tenkan","Ngưỡng Tenkan","num"],["chot_loi_kijun","Kijun (lưới an toàn)","num"],["R_hien_tai","R hiện tại","R"],["lai_pct","Lãi","pct100"],["rui_ro_pct","Rủi ro","risk100"],["so_lan_that_bai","Lần thất bại","num"],["nen_tiep_luc","Nến tiếp theo"],["ghi_chu","Ghi chú","note"]],
     tcols:[["coin","Coin"],["ngay_vao","Ngày vào"],["gia_vao","Giá vào","num"],["dung_lo","Dừng lỗ","num"],["ngay_thoat","Ngày thoát"],["gia_thoat","Giá thoát","num"],["ket_qua","Kết quả"],["so_nen","Số nến","num"],["R","R","R"],["lai_pct","Lãi","pct100"]]},
   ichi1w:{title:"Ichimoku tuần", file:"signals_1w.csv", trades:"trades_1w.csv", key:"ichi", status:"trang_thai",
-    rules:"Khung tuần, 15 coin. Mua khi nến tuần đóng trên Tenkan lần thứ 3. Chốt 50% ở 2R rồi dời dừng lỗ về giá vào; bán phần còn lại khi nến tuần đóng dưới MA18.",
+    rules:"Khung tuần, 15 coin. Mua khi nến tuần đóng trên Tenkan lần thứ 3. Chốt 50% ở 2R rồi dời dừng lỗ về giá vào; bán phần còn lại khi nến tuần đóng dưới MA18. Chỉ tính lệnh mở từ 27/10/2026; lệnh cũ theo luật ghi \"Không theo (lệnh cũ)\".",
     cols:[["coin","Coin"],["trang_thai","Trạng thái","badge"],["gia_hien_tai","Giá","num"],["gia_vao","Giá vào","num"],["dung_lo","Dừng lỗ","num"],["chot_loi_1_2R","Chốt 50% (2R)","num"],["chot_loi_2_ma18","MA18","num"],["da_chot_50","Đã chốt 50%"],["R_hien_tai","R hiện tại","R"],["lai_pct","Lãi","pct100"],["so_lan_that_bai","Lần thất bại","num"],["ghi_chu","Ghi chú","note"]],
     tcols:[["coin","Coin"],["ngay_vao","Ngày vào"],["gia_vao","Giá vào","num"],["dung_lo","Dừng lỗ","num"],["chot_2R","2R","num"],["ngay_chot_50","Chốt 50%"],["ngay_thoat","Ngày thoát"],["gia_thoat_tb","Giá thoát TB","num"],["ket_qua","Kết quả"],["so_tuan","Số tuần","num"],["R","R","R"],["lai_pct","Lãi","pct100"]]},
   v2:{title:"V2 tuần", file:"v2_signals.csv", key:"v2", status:"status", market:true,

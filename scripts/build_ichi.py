@@ -14,6 +14,13 @@ COINS_1W = ["BTC", "ETH", "BNB", "SOL", "AAVE", "MORPHO", "LINK", "UNI", "LDO", 
 CFG = {"3d": dict(window=121, maxfail=9, ms=3 * 86400000, label="3D"),
        "1w": dict(window=52, maxfail=4, ms=7 * 86400000, label="tuần")}
 NEEDFAIL, FEE, TP_R = 2, 0.001, 2.0
+TRACK_FROM = "2026-10-27"   # người dùng bắt đầu theo dõi thực tế từ ngày này; lệnh theo luật mở trước đó không tính là đang giữ
+OLD = "Không theo (lệnh cũ)"
+
+
+def old_note(tr, lbl):
+    return (f"Theo luật có lệnh mở từ {tr['ngay_vao']} (trước ngày bắt đầu theo dõi {TRACK_FROM}), bạn không giữ: bỏ qua. "
+            f"Tín hiệu mua mới của coin này chỉ xuất hiện sau khi lệnh cũ kết thúc theo luật.")
 VN = timezone(timedelta(hours=7))
 
 
@@ -129,7 +136,9 @@ def analyze_3d(coin, now_ms):
                tenkan=r6(ten[last]), kijun=r6(kij[last]), ngay_vao="", gia_vao="", dung_lo="", test_tenkan="",
                canh_bao="", nguong_tenkan="", chot_loi_kijun="", moc_2R="", rui_ro_pct="", R_hien_tai="", lai_pct="",
                so_lan_that_bai=fails[last], ghi_chu="")
-    if tr and tr["ket_qua"] == "Đang mở":
+    if tr and tr["ngay_vao"] < TRACK_FROM and (tr["ket_qua"] == "Đang mở" or tr["_j"] == last):
+        row.update(trang_thai=OLD, ghi_chu=old_note(tr, "3D"))
+    elif tr and tr["ket_qua"] == "Đang mở":
         e, sl = float(tr["gia_vao"]), float(tr["dung_lo"])
         new = tr["_i"] == last
         tests, touching = tr["_tests"], tr["_touch"]
@@ -209,7 +218,9 @@ def analyze_1w(coin, now_ms):
                tenkan=r6(ten[last]), ma18=r6(ma18[last]), ngay_vao="", gia_vao="", dung_lo="", chot_loi_1_2R="",
                chot_loi_2_ma18="", da_chot_50="", rui_ro_pct="", R_hien_tai="", lai_pct="",
                so_lan_that_bai=fails[last], so_tuan_du_lieu=n, ghi_chu="")
-    if tr and tr["ket_qua"].startswith("Đang mở"):
+    if tr and tr["ngay_vao"] < TRACK_FROM and (tr["ket_qua"].startswith("Đang mở") or tr["_j"] == last):
+        row.update(trang_thai=OLD, ghi_chu=old_note(tr, "tuần"))
+    elif tr and tr["ket_qua"].startswith("Đang mở"):
         e, sl = float(tr["gia_vao"]), float(tr["dung_lo"]); risk = e - sl
         new, half = tr["_i"] == last, tr["_k1"] is not None
         just_half = half and tr["_k1"] == last
