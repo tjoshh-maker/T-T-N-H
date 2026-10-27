@@ -157,7 +157,7 @@ MSG = {"ichi": msg_ichi, "v2": msg_v2, "bh": msg_bh}
 
 
 # ---------- Gửi tin: Telegram và Zalo ----------
-def _post(url, data, as_json=False):
+def _post(url, data, as_json=False, http_timeout=30):
     """Gửi POST, trả về (ok, nội dung phản hồi)."""
     import urllib.request, urllib.parse, urllib.error
     if as_json:
@@ -165,7 +165,7 @@ def _post(url, data, as_json=False):
     else:
         body, headers = urllib.parse.urlencode(data).encode(), {}
     try:
-        with urllib.request.urlopen(urllib.request.Request(url, body, headers), timeout=30) as r:
+        with urllib.request.urlopen(urllib.request.Request(url, body, headers), timeout=http_timeout) as r:
             return True, r.read().decode("utf-8", "replace")
     except urllib.error.HTTPError as e:
         return False, f"HTTP {e.code}: {e.read().decode('utf-8', 'replace')[:300]}"
@@ -196,7 +196,9 @@ def zalo_chat_ids(token):
     """In ra chat id của những ai vừa nhắn cho bot Zalo (dùng khi chưa có ZALO_CHAT_ID)."""
     base = f"https://bot-api.zaloplatforms.com/bot{token}"
     _post(base + "/deleteWebhook", {}, as_json=True)
-    ok, res = _post(base + "/getUpdates", {"timeout": 5}, as_json=True)
+    ok, res = _post(base + "/getUpdates", {"timeout": 30}, as_json=True, http_timeout=45)
+    if not ok and "408" in res:   # hết thời gian chờ mà chưa có tin mới
+        ok, res = True, "{}"
     if not ok:
         print("Zalo getUpdates lỗi:", res, file=sys.stderr)
         print(f"::warning title=Zalo::getUpdates lỗi: {res[:200]}")
