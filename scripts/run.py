@@ -6,7 +6,8 @@ Cách dùng:
     python scripts/run.py --jobs ichi,v2  # chỉ chạy những bộ được nêu
     python scripts/run.py --no-send       # không gửi Telegram, chỉ in tin nhắn ra màn hình
 
-Biến môi trường (tùy chọn): TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, DASHBOARD_URL.
+Biến môi trường (tùy chọn): TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, ZALO_BOT_TOKEN, ZALO_CHAT_ID, DASHBOARD_URL.
+Có ZALO_BOT_TOKEN mà chưa có ZALO_CHAT_ID: nhật ký sẽ in ra chat id của người vừa nhắn cho bot Zalo.
 """
 import argparse, csv, json, os, shutil, subprocess, sys, tempfile
 from datetime import datetime, timezone, timedelta
@@ -70,20 +71,28 @@ def msg_ichi(d, today):
     s3, s1 = read_csv(os.path.join(d, "signals_3d.csv")), read_csv(os.path.join(d, "signals_1w.csv"))
     out, new = [], False
     closed3 = [r for r in s3 if r["nen_dong_luc"][:10] == today]
+    # Luật 3D: bán toàn bộ ở lần test Tenkan thứ 2 (giá đóng nến); lưới an toàn: nến 3D đóng dưới Kijun.
     if closed3:
         buys = [r for r in closed3 if r["trang_thai"] == "Mua mới"]
         exits = [r for r in closed3 if r["trang_thai"] == "Thoát lệnh"]
+        warns = [r for r in closed3 if r["trang_thai"] == "Đang giữ" and r.get("canh_bao")]
         if buys:
             new = True
             out.append("3D BÁO MUA: " + "; ".join(
-                f"{r['coin']} giá vào {fmt(r['gia_vao'])}, dừng lỗ {fmt(r['dung_lo'])}, Kijun {fmt(r['chot_loi_kijun'])}, rủi ro {fmt(r['rui_ro_pct'])}%"
+                f"{r['coin']} giá vào {fmt(r['gia_vao'])}, dừng lỗ {fmt(r['dung_lo'])}, rủi ro {fmt(r['rui_ro_pct'])}%"
                 for r in buys))
         if exits:
             new = True
             out.append("3D THOÁT: " + "; ".join(f"{r['coin']} – {r['ghi_chu']}" for r in exits))
+        if warns:
+            new = True
+            out.append("3D CẢNH BÁO: " + "; ".join(
+                f"{r['coin']} {r['canh_bao']} (Tenkan {fmt(r['nguong_tenkan'])}, {fmt(r['R_hien_tai'])}R)"
+                for r in warns))
     hold3 = [r for r in s3 if r["trang_thai"] in ("Đang giữ", "Mua mới")]
     if hold3:
-        out.append("3D đang giữ: " + ", ".join(f"{r['coin']} ({fmt(r['R_hien_tai'])}R)" for r in hold3))
+        out.append("3D đang giữ: " + ", ".join(
+            f"{r['coin']} ({fmt(r['R_hien_tai'])}R, đã test Tenkan {r.get('test_tenkan') or 0} lần)" for r in hold3))
     if s1 and s1[0]["nen_dong_luc"][:10] == today:
         groups = [("TUẦN BÁO MUA", "Mua mới", lambda r: f"{r['coin']} giá vào {fmt(r['gia_vao'])}, dừng lỗ {fmt(r['dung_lo'])}, chốt 50% tại {fmt(r['chot_loi_1_2R'])}, rủi ro {fmt(r['rui_ro_pct'])}%"),
                   ("TUẦN VỪA CHỐT 50%", "Vừa chốt 50%", lambda r: f"{r['coin']} (dời dừng lỗ phần còn lại về giá vào {fmt(r['gia_vao'])})"),
@@ -147,19 +156,88 @@ def msg_bh(d, today):
 MSG = {"ichi": msg_ichi, "v2": msg_v2, "bh": msg_bh}
 
 
-# ---------- Telegram ----------
+# ---------- Gửi tin: Telegram và Zalo ----------
+def _post(url, data, as_json=False):
+    """Gửi POST, trả về (ok, nội dung phản hồi)."""
+    import urllib.request, urllib.parse, urllib.error
+    if as_json:
+        body, headers = json.dumps(data).encode(), {"Content-Type": "application/json"}
+    else:
+        body, headers = urllib.parse.urlencode(data).encode(), {}
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, body, headers), timeout=30) as r:
+            return True, r.read().decode("utf-8", "replace")
+    except urllib.error.HTTPError as e:
+        return False, f"HTTP {e.code}: {e.read().decode('utf-8', 'replace')[:300]}"
+    except Exception as e:
+        return False, str(e)
+
+
+def chunks(text, size):
+    return [text[i:i + size] for i in range(0, len(text), size)] or [""]
+
+
 def send_telegram(text):
     token, chat = os.environ.get("TELEGRAM_BOT_TOKEN"), os.environ.get("TELEGRAM_CHAT_ID")
     if not token or not chat:
-        print("(chưa cài TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID: bỏ qua gửi tin)")
+        print("(chưa cài TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID: bỏ qua Telegram)")
         return
-    import urllib.request, urllib.parse
-    for i in range(0, len(text), 3900):
-        body = urllib.parse.urlencode({"chat_id": chat, "text": text[i:i + 3900], "disable_web_page_preview": "true"}).encode()
-        try:
-            urllib.request.urlopen(f"https://api.telegram.org/bot{token}/sendMessage", body, timeout=30).read()
-        except Exception as e:
-            print("Gửi Telegram lỗi:", e, file=sys.stderr)
+    for part in chunks(text, 3900):
+        ok, res = _post(f"https://api.telegram.org/bot{token}/sendMessage",
+                        {"chat_id": chat, "text": part, "disable_web_page_preview": "true"})
+        if not ok:
+            print("Gửi Telegram lỗi:", res, file=sys.stderr)
+            if "chat not found" in res:
+                print("  -> TELEGRAM_CHAT_ID sai: hãy nhắn cho bot rồi lấy lại 'chat':{'id':...} trong getUpdates", file=sys.stderr)
+            return
+
+
+def zalo_chat_ids(token):
+    """In ra chat id của những ai vừa nhắn cho bot Zalo (dùng khi chưa có ZALO_CHAT_ID)."""
+    base = f"https://bot-api.zaloplatforms.com/bot{token}"
+    _post(base + "/deleteWebhook", {}, as_json=True)
+    ok, res = _post(base + "/getUpdates", {"timeout": 5}, as_json=True)
+    if not ok:
+        print("Zalo getUpdates lỗi:", res, file=sys.stderr)
+        return
+    found = set()
+    def walk(o):
+        if isinstance(o, dict):
+            if isinstance(o.get("chat"), dict) and o["chat"].get("id"):
+                found.add((str(o["chat"]["id"]), o["chat"].get("display_name") or o["chat"].get("name") or ""))
+            for v in o.values(): walk(v)
+        elif isinstance(o, list):
+            for v in o: walk(v)
+    try:
+        walk(json.loads(res))
+    except Exception:
+        pass
+    if found:
+        for cid, name in found:
+            print(f">>> ZALO_CHAT_ID tìm được: {cid}  {name}")
+    else:
+        print(">>> Chưa thấy tin nhắn nào gửi tới bot Zalo. Hãy mở bot trong Zalo, gửi 'hi' rồi chạy lại. Phản hồi:", res[:300])
+
+
+def send_zalo(text):
+    token, chat = os.environ.get("ZALO_BOT_TOKEN"), os.environ.get("ZALO_CHAT_ID")
+    if not token:
+        return
+    if not chat:
+        print("(đã có ZALO_BOT_TOKEN nhưng chưa có ZALO_CHAT_ID: đang dò chat id…)")
+        zalo_chat_ids(token)
+        return
+    for part in chunks(text, 1900):          # Zalo giới hạn 2000 ký tự mỗi tin
+        ok, res = _post(f"https://bot-api.zaloplatforms.com/bot{token}/sendMessage",
+                        {"chat_id": chat, "text": part}, as_json=True)
+        if not ok or '"ok":false' in res.replace(" ", ""):
+            print("Gửi Zalo lỗi:", res, file=sys.stderr)
+            return
+
+
+def send_all(text):
+    send_telegram(text)
+    send_zalo(text)
 
 
 def dashboard_url():
@@ -233,7 +311,7 @@ def main():
         text += f"\n{NOTE}"
         print("\n--- Tin nhắn ---\n" + text)
         if not a.no_send:
-            send_telegram(text)
+            send_all(text)
     meta["lastRun"] = {"at": now_utc(), "jobs": keys}
     with open(META, "w", encoding="utf-8") as f:
         json.dump(meta, f, ensure_ascii=False, indent=1)

@@ -97,8 +97,8 @@ const ORDER = s => ({"Mua mới":1,"Tín hiệu mới":1,"Báo mua":1,"Thoát l�
 // cột: [khóa, nhãn, kiểu]  kiểu: num | pct (tỷ lệ) | pct100 (đã là %) | R | badge | note | text
 const VIEWS = {
   ichi3d:{title:"Ichimoku 3D", file:"signals_3d.csv", trades:"trades_3d.csv", key:"ichi", status:"trang_thai",
-    rules:"Khung nến 3 ngày (BTC, ETH, BNB, SOL, LINK). Mua khi nến 3D đóng trên Tenkan lần thứ 3 sau ≥ 2 lần thất bại. Dừng lỗ ở đáy nến tín hiệu; chốt toàn bộ khi nến 3D đóng dưới Kijun.",
-    cols:[["coin","Coin"],["trang_thai","Trạng thái","badge"],["gia_hien_tai","Giá","num"],["gia_vao","Giá vào","num"],["dung_lo","Dừng lỗ","num"],["chot_loi_kijun","Kijun (chốt)","num"],["R_hien_tai","R hiện tại","R"],["lai_pct","Lãi","pct100"],["rui_ro_pct","Rủi ro","risk100"],["tenkan","Tenkan","num"],["so_lan_that_bai","Lần thất bại","num"],["nen_tiep_luc","Nến tiếp theo"],["ghi_chu","Ghi chú","note"]],
+    rules:"Khung nến 3 ngày (BTC, ETH, BNB, SOL, LINK, ZEC, NEAR). Mua khi nến 3D đóng trên Tenkan lần thứ 3 sau ≥ 2 lần thất bại. Dừng lỗ ở đáy nến tín hiệu. Chốt lời: bán toàn bộ ở lần test Tenkan thứ 2 (giá thấp nhất chạm Tenkan, bán ở giá đóng nến đó); lưới an toàn: nến 3D đóng dưới Kijun.",
+    cols:[["coin","Coin"],["trang_thai","Trạng thái","badge"],["canh_bao","Cảnh báo","warn"],["gia_hien_tai","Giá","num"],["gia_vao","Giá vào","num"],["dung_lo","Dừng lỗ","num"],["test_tenkan","Đã test Tenkan","num"],["nguong_tenkan","Ngưỡng Tenkan","num"],["chot_loi_kijun","Kijun (lưới an toàn)","num"],["R_hien_tai","R hiện tại","R"],["lai_pct","Lãi","pct100"],["rui_ro_pct","Rủi ro","risk100"],["so_lan_that_bai","Lần thất bại","num"],["nen_tiep_luc","Nến tiếp theo"],["ghi_chu","Ghi chú","note"]],
     tcols:[["coin","Coin"],["ngay_vao","Ngày vào"],["gia_vao","Giá vào","num"],["dung_lo","Dừng lỗ","num"],["ngay_thoat","Ngày thoát"],["gia_thoat","Giá thoát","num"],["ket_qua","Kết quả"],["so_nen","Số nến","num"],["R","R","R"],["lai_pct","Lãi","pct100"]]},
   ichi1w:{title:"Ichimoku tuần", file:"signals_1w.csv", trades:"trades_1w.csv", key:"ichi", status:"trang_thai",
     rules:"Khung tuần, 15 coin. Mua khi nến tuần đóng trên Tenkan lần thứ 3. Chốt 50% ở 2R rồi dời dừng lỗ về giá vào; bán phần còn lại khi nến tuần đóng dưới MA18.",
@@ -135,6 +135,7 @@ async function load(file){
 function cell(r,[k,,t]){
   const v=r[k];
   if(t==="badge") return `<td>${badge(v)}</td>`;
+  if(t==="warn") return `<td>${v?`<span class="b b-${/BÁN/.test(v)?'sell':'warn'}">${esc(v)}</span>`:"–"}</td>`;
   if(t==="num") return `<td class="num">${esc(fNum(v))}</td>`;
   if(t==="pct") return `<td class="num">${fPct(v)}</td>`;
   if(t==="pct100") return `<td class="num">${fPct(v,false)}</td>`;

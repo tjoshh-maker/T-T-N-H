@@ -1,5 +1,5 @@
 """Chiến lược Ichimoku "lần thứ 3" trên Binance spot (dữ liệu công khai). Xuất 4 file CSV:
-  Khung 3D (BTC, ETH, BNB, SOL, LINK) – thoát toàn bộ khi nến 3D đóng dưới Kijun:
+  Khung 3D (BTC, ETH, BNB, SOL, LINK, ZEC, NEAR) – thoát toàn bộ ở lần test Tenkan thứ 2 (giá đóng nến), lưới an toàn: đóng dưới Kijun:
       signals_3d.csv, trades_3d.csv
   Khung 1W (15 coin theo dõi) – chốt 50% ở 2R (dời SL về hòa vốn), 50% còn lại thoát khi nến tuần đóng dưới MA18:
       signals_1w.csv, trades_1w.csv
@@ -9,7 +9,7 @@ import json, sys, os, time, csv, urllib.request
 from datetime import datetime, timezone, timedelta
 
 API = "https://data-api.binance.vision/api/v3"
-COINS_3D = ["BTC", "ETH", "BNB", "SOL", "LINK"]
+COINS_3D = ["BTC", "ETH", "BNB", "SOL", "LINK", "ZEC", "NEAR"]
 COINS_1W = ["BTC", "ETH", "BNB", "SOL", "AAVE", "MORPHO", "LINK", "UNI", "LDO", "TWT", "XPL", "ZEC", "NEAR", "ONDO", "TAO"]
 CFG = {"3d": dict(window=121, maxfail=9, ms=3 * 86400000, label="3D"),
        "1w": dict(window=52, maxfail=4, ms=7 * 86400000, label="tuần")}
@@ -95,10 +95,21 @@ def analyze_3d(coin, now_ms):
         e, sl = c[i], l[i]; risk = e - sl
         if risk <= 0:
             i += 1; continue
+        # Luật thoát: (1) dừng lỗ tại low nến tín hiệu; (2) lần TEST TENKAN THỨ 2 -> bán toàn bộ ở giá đóng nến đó;
+        # (3) lưới an toàn: nến đóng dưới Kijun. "Test" = giá thấp nhất chạm/xuyên Tenkan của nến trước, sau khi
+        # giá đã rời hẳn Tenkan (các nến chạm liên tiếp tính 1 lần; nến tín hiệu không tính).
         px, res, j = None, "Đang mở", n - 1
+        tests, prev_touch = 0, True
         for j in range(i + 1, n):
             if l[j] <= sl:
                 px, res = min(o[j], sl), "Dừng lỗ"; break
+            tl = ten[j - 1]
+            touch = tl is not None and l[j] <= tl
+            if touch and not prev_touch:
+                tests += 1
+            prev_touch = touch
+            if touch and tests >= 2:
+                px, res = c[j], "Test Tenkan lần 2"; break
             if kij[j] is not None and c[j] < kij[j]:
                 px, res = c[j], "Đóng dưới Kijun"; break
         if px is None:
@@ -107,24 +118,36 @@ def analyze_3d(coin, now_ms):
         trades.append(dict(coin=coin, ngay_vao=vn(ct[i], "%Y-%m-%d"), gia_vao=r6(e), dung_lo=r6(sl),
                            ngay_thoat="" if res == "Đang mở" else vn(ct[j], "%Y-%m-%d"),
                            gia_thoat="" if res == "Đang mở" else r6(px), ket_qua=res, so_nen=j - i,
-                           rui_ro_pct=round(risk / e * 100, 2), R=R, lai_pct=pct, _i=i, _j=j))
+                           rui_ro_pct=round(risk / e * 100, 2), R=R, lai_pct=pct, _i=i, _j=j,
+                           _tests=tests, _touch=prev_touch))
         i = j + 1
     live = float(get(f"/ticker/price?symbol={coin}USDT")["price"])
     last = n - 1
     tr = trades[-1] if trades else None
     row = dict(coin=coin, trang_thai="Chờ tín hiệu", bao_mua="", gia_dong_nen=r6(c[last]), gia_hien_tai=r6(live),
                nen_dong_luc=vn(ct[last]), nen_tiep_luc=vn(ct[last] + cf["ms"]),
-               tenkan=r6(ten[last]), kijun=r6(kij[last]), ngay_vao="", gia_vao="", dung_lo="", chot_loi_kijun="",
-               moc_2R="", rui_ro_pct="", R_hien_tai="", lai_pct="", so_lan_that_bai=fails[last], ghi_chu="")
+               tenkan=r6(ten[last]), kijun=r6(kij[last]), ngay_vao="", gia_vao="", dung_lo="", test_tenkan="",
+               canh_bao="", nguong_tenkan="", chot_loi_kijun="", moc_2R="", rui_ro_pct="", R_hien_tai="", lai_pct="",
+               so_lan_that_bai=fails[last], ghi_chu="")
     if tr and tr["ket_qua"] == "Đang mở":
         e, sl = float(tr["gia_vao"]), float(tr["dung_lo"])
         new = tr["_i"] == last
+        tests, touching = tr["_tests"], tr["_touch"]
+        if new:
+            warn, note = "", "Tín hiệu mới: mua ngay sau khi nến 3D đóng; đặt dừng lỗ trên sàn."
+        elif tests == 0:
+            warn, note = "", "Chưa test Tenkan lần nào."
+        elif touching:
+            warn, note = "Đang test lần 1", "Nến vừa đóng chạm Tenkan (lần 1). Lần chạm tiếp theo sau khi giá rời Tenkan sẽ là lần 2."
+        else:
+            warn, note = "Lần chạm tới = BÁN", (f"Đã test Tenkan 1 lần. Nếu nến 3D tới có giá thấp nhất ≤ {r6(ten[last])} "
+                                                 "thì bán toàn bộ ở giá đóng nến đó.")
         row.update(trang_thai="Mua mới" if new else "Đang giữ", bao_mua="MUA" if new else "",
-                   ngay_vao=tr["ngay_vao"], gia_vao=tr["gia_vao"], dung_lo=tr["dung_lo"],
+                   ngay_vao=tr["ngay_vao"], gia_vao=tr["gia_vao"], dung_lo=tr["dung_lo"], test_tenkan=tests,
+                   canh_bao=warn, nguong_tenkan=r6(ten[last]),
                    chot_loi_kijun=r6(kij[last]), moc_2R=r6(e + 2 * (e - sl)), rui_ro_pct=tr["rui_ro_pct"],
                    R_hien_tai=round((live - e) / (e - sl), 2), lai_pct=round((live / e - 1) * 100, 2),
-                   ghi_chu=("Tín hiệu mới: mua ngay sau khi nến 3D đóng. " if new else "")
-                   + "Dừng lỗ đặt sẵn trên sàn; chốt lời toàn bộ khi một nến 3D ĐÓNG dưới Kijun.")
+                   ghi_chu=note + " Lưới an toàn: bán nếu nến 3D ĐÓNG dưới Kijun.")
     elif tr and tr["_j"] == last:
         row.update(trang_thai="Thoát lệnh", ngay_vao=tr["ngay_vao"], gia_vao=tr["gia_vao"], dung_lo=tr["dung_lo"],
                    R_hien_tai=tr["R"], lai_pct=tr["lai_pct"],
@@ -132,7 +155,8 @@ def analyze_3d(coin, now_ms):
     else:
         row["ghi_chu"] = waiting_note(above, fails, ten, last, "3D")
     for t in trades:
-        t.pop("_i"); t.pop("_j")
+        for k in ("_i", "_j", "_tests", "_touch"):
+            t.pop(k)
     return row, trades
 
 
