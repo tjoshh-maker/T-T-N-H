@@ -1,8 +1,8 @@
 coin,trang_thai,bao_mua,gia_dong_nen,gia_hien_tai,nen_dong_luc,nen_tiep_luc,tenkan,kijun,ngay_vao,gia_vao,dung_lo,test_tenkan,canh_bao,nguong_tenkan,chot_loi_kijun,moc_2R,rui_ro_pct,R_hien_tai,lai_pct,so_lan_that_bai,ghi_chu,cap_nhat
-BTC,Chờ tín hiệu,,75368.4,73403.4,2026-11-10 07:00,2026-11-13 07:00,79204.0,80452.8,,,,,,,,,,,,6,Đủ 6 lần thất bại: báo mua nếu nến 3D tới ĐÓNG trên Tenkan (79204.0).,2026-11-11T01:12:32Z
-ETH,Chờ tín hiệu,,2135.24,2043.99,2026-11-10 07:00,2026-11-13 07:00,2295.22,2433.67,,,,,,,,,,,,6,Đủ 6 lần thất bại: báo mua nếu nến 3D tới ĐÓNG trên Tenkan (2295.22).,2026-11-11T01:12:32Z
-BNB,Chờ tín hiệu,,691.44,679.25,2026-11-10 07:00,2026-11-13 07:00,717.755,741.65,,,,,,,,,,,,11,Đủ 11 lần thất bại: báo mua nếu nến 3D tới ĐÓNG trên Tenkan (717.755).,2026-11-11T01:12:32Z
-SOL,Chờ tín hiệu,,83.35,82.98,2026-11-11 07:00,2026-11-14 07:00,95.27,103.145,,,,,,,,,,,,7,Đủ 7 lần thất bại: báo mua nếu nến 3D tới ĐÓNG trên Tenkan (95.27).,2026-11-11T01:12:32Z
-LINK,Chờ tín hiệu,,10.296,10.321,2026-11-11 07:00,2026-11-14 07:00,11.4555,12.9395,,,,,,,,,,,,11,Đủ 11 lần thất bại: báo mua nếu nến 3D tới ĐÓNG trên Tenkan (11.4555).,2026-11-11T01:12:32Z
-ZEC,Không theo (lệnh cũ),,1213.5,1026.06,2026-11-09 07:00,2026-11-12 07:00,1223.58,1224.76,,,,,,,,,,,,9,"Theo luật có lệnh mở từ 2026-08-20 (trước ngày bắt đầu theo dõi 2026-10-27), bạn không giữ: bỏ qua. Tín hiệu mua mới của coin này chỉ xuất hiện sau khi lệnh cũ kết thúc theo luật.",2026-11-11T01:12:32Z
-NEAR,Chờ tín hiệu,,3.586,3.616,2026-11-09 07:00,2026-11-12 07:00,4.4485,3.8895,,,,,,,,,,,,5,Đủ 5 lần thất bại: báo mua nếu nến 3D tới ĐÓNG trên Tenkan (4.4485).,2026-11-11T01:12:32Z
+BTC,Chờ tín hiệu,,75368.4,73688.5,2026-11-10 07:00,2026-11-13 07:00,79204.0,80452.8,,,,,,,,,,,,6,Đủ 6 lần thất bại: báo mua nếu nến 3D tới ĐÓNG trên Tenkan (79204.0).,2026-11-12T01:21:47Z
+ETH,Chờ tín hiệu,,2135.24,2050.55,2026-11-10 07:00,2026-11-13 07:00,2295.22,2433.67,,,,,,,,,,,,6,Đủ 6 lần thất bại: báo mua nếu nến 3D tới ĐÓNG trên Tenkan (2295.22).,2026-11-12T01:21:47Z
+BNB,Chờ tín hiệu,,691.44,677.99,2026-11-10 07:00,2026-11-13 07:00,717.755,741.65,,,,,,,,,,,,11,Đủ 11 lần thất bại: báo mua nếu nến 3D tới ĐÓNG trên Tenkan (717.755).,2026-11-12T01:21:47Z
+SOL,Chờ tín hiệu,,83.35,83.1,2026-11-11 07:00,2026-11-14 07:00,95.27,103.145,,,,,,,,,,,,7,Đủ 7 lần thất bại: báo mua nếu nến 3D tới ĐÓNG trên Tenkan (95.27).,2026-11-12T01:21:47Z
+LINK,Chờ tín hiệu,,10.296,10.134,2026-11-11 07:00,2026-11-14 07:00,11.4555,12.9395,,,,,,,,,,,,11,Đủ 11 lần thất bại: báo mua nếu nến 3D tới ĐÓNG trên Tenkan (11.4555).,2026-11-12T01:21:47Z
+ZEC,Chờ tín hiệu,,964.38,984.25,2026-11-12 07:00,2026-11-15 07:00,1174.68,1228.0,,,,,,,,,,,,9,Đủ 9 lần thất bại: báo mua nếu nến 3D tới ĐÓNG trên Tenkan (1174.68).,2026-11-12T01:21:47Z
+NEAR,Chờ tín hiệu,,3.586,3.586,2026-11-12 07:00,2026-11-15 07:00,4.4485,3.8895,,,,,,,,,,,,5,Đủ 5 lần thất bại: báo mua nếu nến 3D tới ĐÓNG trên Tenkan (4.4485).,2026-11-12T01:21:47Z
