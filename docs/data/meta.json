@@ -1,9 +1,9 @@
 {
  "datasets": {
   "ichi": {
-   "updated": "2026-11-16T01:32:25Z",
+   "updated": "2026-11-17T01:20:45Z",
    "lastAttempt": {
-    "at": "2026-11-16T01:32:25Z",
+    "at": "2026-11-17T01:20:45Z",
     "ok": true
    }
   },
@@ -24,8 +24,8 @@
  },
  "messages": {
   "ichi": {
-   "at": "2026-11-16T01:32:25Z",
-   "text": "Không có tín hiệu mới hôm nay. Nến 3D tiếp theo đóng 2026-11-17 07:00, nến tuần 2026-11-23 07:00.\nKhung tuần đang giữ 0 coin."
+   "at": "2026-11-17T01:20:45Z",
+   "text": "Không có tín hiệu mới hôm nay. Nến 3D tiếp theo đóng 2026-11-18 07:00, nến tuần 2026-11-23 07:00."
   },
   "v2": {
    "at": "2026-11-16T01:34:31Z",
@@ -37,11 +37,9 @@
   }
  },
  "lastRun": {
-  "at": "2026-11-16T01:35:12Z",
+  "at": "2026-11-17T01:20:47Z",
   "jobs": [
-   "ichi",
-   "v2",
-   "bh"
+   "ichi"
   ]
  }
 }
