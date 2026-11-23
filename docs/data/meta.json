@@ -1,45 +1,47 @@
 {
  "datasets": {
   "ichi": {
-   "updated": "2026-11-22T01:17:22Z",
+   "updated": "2026-11-23T01:23:37Z",
    "lastAttempt": {
-    "at": "2026-11-22T01:17:22Z",
+    "at": "2026-11-23T01:23:37Z",
     "ok": true
    }
   },
   "v2": {
-   "updated": "2026-11-16T01:34:31Z",
+   "updated": "2026-11-23T01:25:30Z",
    "lastAttempt": {
-    "at": "2026-11-16T01:34:31Z",
+    "at": "2026-11-23T01:25:30Z",
     "ok": true
    }
   },
   "bh": {
-   "updated": "2026-11-16T01:35:10Z",
+   "updated": "2026-11-23T01:26:07Z",
    "lastAttempt": {
-    "at": "2026-11-16T01:35:10Z",
+    "at": "2026-11-23T01:26:07Z",
     "ok": true
    }
   }
  },
  "messages": {
   "ichi": {
-   "at": "2026-11-22T01:17:22Z",
-   "text": "Không có tín hiệu mới hôm nay. Nến 3D tiếp theo đóng 2026-11-23 07:00, nến tuần 2026-11-23 07:00."
+   "at": "2026-11-23T01:23:37Z",
+   "text": "Không có tín hiệu mới hôm nay. Nến 3D tiếp theo đóng 2026-11-24 07:00, nến tuần 2026-11-30 07:00.\nKhung tuần đang giữ 0 coin."
   },
   "v2": {
-   "at": "2026-11-16T01:34:31Z",
-   "text": "MUA MỚI: POW (CK, nghìn đ) giá 13.05, dừng lỗ 12.35, chốt 50% tại 14.45, rủi ro 5.4%; SHB (CK, nghìn đ) giá 10.9, dừng lỗ 10.6, chốt 50% tại 11.5, rủi ro 2.8%; STB (CK, nghìn đ) giá 71.2, dừng lỗ 68, chốt 50% tại 77.6, rủi ro 4.5%; TCB (CK, nghìn đ) giá 21.85, dừng lỗ 21.3, chốt 50% tại 22.95, rủi ro 2.5%\nBÁN NỐT 50%: UNI (crypto), ZEC (crypto), NEAR (crypto)\nVỪA THOÁT: BTC (2.86R), ETH (2.01R), BNB (0.94R), AAVE (1.81R), LDO (-1.01R), AVAX (1.11R), KAVA (0.99R), PENGU (-1R), ARB (-1.01R), BCH (-1.01R), DASH (1.11R), SHIB (-1.01R), PVT (1.18R)\nBTC: Vừa thoát; VNINDEX: Chờ vượt Tenkan. Đang giữ 20 mã, đã chốt 2R giữ 50%: 3 mã."
+   "at": "2026-11-23T01:25:30Z",
+   "text": "BÁN NỐT 50%: INIT (crypto)\nVỪA THOÁT: UNI (2.5R), ZEC (2.99R), NEAR (2.32R), ZRO (0.99R), ETHFI (1.28R), DOT (-1R), VNZ (-1.08R), ACB (-1.05R), SHB (-1.15R), TCB (-1.17R), VIB (-1.16R), VNM (-1.07R)\nBTC: Vừa thoát; VNINDEX: Chờ vượt Tenkan. Đang giữ 15 mã, đã chốt 2R giữ 50%: 3 mã."
   },
   "bh": {
-   "at": "2026-11-16T01:35:10Z",
-   "text": "CHỜ LẦN 3: SOL (crypto) cần tuần đóng trên Tenkan 96.18, giá hiện 71.26; LINK (crypto) cần tuần đóng trên Tenkan 12.1755, giá hiện 9.127; TWT (crypto) cần tuần đóng trên Tenkan 0.47335, giá hiện 0.3546; LDO (crypto) cần tuần đóng trên Tenkan 0.3811, giá hiện 0.274; ONDO (crypto) cần tuần đóng trên Tenkan 0.44705, giá hiện 0.3049; PLX (CK, nghìn đ) cần tuần đóng trên Tenkan 35.9, giá hiện 33.5; VNM (CK, nghìn đ) cần tuần đóng trên Tenkan 55.925, giá hiện 53.6; PNJ (CK, nghìn đ) cần tuần đóng trên Tenkan 25.675, giá hiện 14.95\nĐANG TÍCH LŨY: AAVE, GAS, OIL, HVN, SAB, MSN"
+   "at": "2026-11-23T01:26:07Z",
+   "text": "CHỜ LẦN 3: SOL (crypto) cần tuần đóng trên Tenkan 94.91, giá hiện 70.6; LINK (crypto) cần tuần đóng trên Tenkan 11.8745, giá hiện 8.809; TWT (crypto) cần tuần đóng trên Tenkan 0.451, giá hiện 0.3154; LDO (crypto) cần tuần đóng trên Tenkan 0.3634, giá hiện 0.235; ONDO (crypto) cần tuần đóng trên Tenkan 0.43145, giá hiện 0.2809; PLX (CK, nghìn đ) cần tuần đóng trên Tenkan 34.275, giá hiện 30.95; VNM (CK, nghìn đ) cần tuần đóng trên Tenkan 54.625, giá hiện 51.4; MSN (CK, nghìn đ) cần tuần đóng trên Tenkan 71.6, giá hiện 69.9; PNJ (CK, nghìn đ) cần tuần đóng trên Tenkan 25.15, giá hiện 13.5\nĐANG TÍCH LŨY: AAVE, GAS, OIL, HVN, SAB"
   }
  },
  "lastRun": {
-  "at": "2026-11-22T01:17:25Z",
+  "at": "2026-11-23T01:26:10Z",
   "jobs": [
-   "ichi"
+   "ichi",
+   "v2",
+   "bh"
   ]
  }
 }
